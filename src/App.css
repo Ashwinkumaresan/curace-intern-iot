@@ -1,0 +1,14 @@
+.table-responsive {
+  position: relative;
+  overflow-x: visible;
+}
+
+.table-responsive .dropdown-menu {
+  position: absolute;
+  z-index: 1050;
+}
+@media (max-width: 960px) {
+  .table-responsive {
+    overflow-x: scroll;
+  }
+}
