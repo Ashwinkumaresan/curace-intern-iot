@@ -263,37 +263,52 @@ const OrganizationDetail = ({ id }) => {
         setShowEditUserModal(true)
     }
 
-
-    // add starting
-
     // handle add user
-    const handleAddUser = () => {
+    const handleAddUser = async () => {
+        const accessToken = localStorage.getItem("access_token")
+        const userId = localStorage.getItem("User Id")
         if (userFormData.username && userFormData.email && userFormData.userRole && organization) {
-            const newUser = {
-                objectId: organization.users.length + 1,
+            const newUserPayload = {
                 username: userFormData.username,
                 email: userFormData.email,
                 userRole: userFormData.userRole,
-                status: userFormData.status,
-                createdOn: new Date().toISOString().split("T")[0],
-            }
+                userId,
+            };
 
-            setOrganization((prev) =>
-                prev
-                    ? {
-                        ...prev,
-                        users: [...prev.users, newUser],
+            try {
+                const response = await axios.post(
+                    "http://62.72.13.179:5000/users/add/",
+                    newUserPayload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                        },
                     }
-                    : null,
-            )
+                );
 
-            setUserFormData({
-                username: "",
-                email: "",
-                userRole: "",
-                status: "Active",
-            })
-            setShowAddUserModal(false)
+                const addedUser = response.data;
+                setOrganization((prev) =>
+                    prev
+                        ? {
+                            ...prev,
+                            users: [...prev.users, addedUser],
+                        }
+                        : null
+                );
+
+                setUserFormData({
+                    username: "",
+                    email: "",
+                    userRole: "",
+                    status: "Active",
+                });
+                setShowAddUserModal(false);
+                await fetchOrganizationData();
+            } catch (error) {
+                console.error("Failed to add user:", error);
+                console.error("Failed to add user:", error.response);
+            }
         }
     }
 
@@ -680,14 +695,14 @@ const OrganizationDetail = ({ id }) => {
                             {/* Associated Organizations Table */}
                             {organization.customerType !== "End Customer" && organization.organizations && organization.organizations.length >= 0 && (
                                 <div className="card mb-4 shadow-sm"
-                                style={{
-                                    height: "50vh",
-                                    overflowY: "scroll",
-                                }}>
-                                    <div className="card-header d-flex justify-content-between align-items-center bg-white py-3 position-sticky top-0"
                                     style={{
-                                        zIndex: "10",
+                                        height: "50vh",
+                                        overflowY: "scroll",
                                     }}>
+                                    <div className="card-header d-flex justify-content-between align-items-center bg-white py-3 position-sticky top-0"
+                                        style={{
+                                            zIndex: "10",
+                                        }}>
                                         <div>
                                             <h5 className="card-title mb-0 fw-bold">
                                                 <i className="bi bi-building me-2"></i>
@@ -1180,55 +1195,59 @@ const OrganizationDetail = ({ id }) => {
             {showAddUserModal && (
                 <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
                     <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Add New User</h5>
-                                <button type="button" className="btn-close" onClick={() => setShowAddUserModal(false)}></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="mb-3">
-                                    <label htmlFor="userNameInput" className="form-label">
-                                        Username *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="userNameInput"
-                                        value={userFormData.username}
-                                        onChange={(e) => setUserFormData((prev) => ({ ...prev, username: e.target.value }))}
-                                        placeholder="Enter username"
-                                    />
+                        <form onClick={handleAddUser}>
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Add New User</h5>
+                                    <button type="button" className="btn-close" onClick={() => setShowAddUserModal(false)}></button>
                                 </div>
-                                <div className="mb-3">
-                                    <label htmlFor="userEmailInput" className="form-label">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        id="userEmailInput"
-                                        value={userFormData.email}
-                                        onChange={(e) => setUserFormData((prev) => ({ ...prev, email: e.target.value }))}
-                                        placeholder="Enter email address"
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="userRoleInput" className="form-label">
-                                        User Role *
-                                    </label>
-                                    <select
-                                        className="form-select"
-                                        id="userRoleInput"
-                                        value={userFormData.userRole}
-                                        onChange={(e) => setUserFormData((prev) => ({ ...prev, userRole: e.target.value }))}
-                                    >
-                                        <option value="">Select role</option>
-                                        <option value="Executive">Executive</option>
-                                        <option value="Engineer">Engineer</option>
-                                        <option value="Admin">Admin</option>
-                                    </select>
-                                </div>
-                                <div className="mb-3">
+                                <div className="modal-body">
+                                    <div className="mb-3">
+                                        <label htmlFor="userNameInput" className="form-label">
+                                            Username *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="userNameInput"
+                                            value={userFormData.username}
+                                            onChange={(e) => setUserFormData((prev) => ({ ...prev, username: e.target.value }))}
+                                            placeholder="Enter username"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="userEmailInput" className="form-label">
+                                            Email *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            className="form-control"
+                                            id="userEmailInput"
+                                            value={userFormData.email}
+                                            onChange={(e) => setUserFormData((prev) => ({ ...prev, email: e.target.value }))}
+                                            placeholder="Enter email address"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="userRoleInput" className="form-label">
+                                            User Role *
+                                        </label>
+                                        <select
+                                            className="form-select"
+                                            id="userRoleInput"
+                                            value={userFormData.userRole}
+                                            onChange={(e) => setUserFormData((prev) => ({ ...prev, userRole: e.target.value }))}
+                                            required
+                                        >
+                                            <option value="">Select role</option>
+                                            <option value="Executive">Executive</option>
+                                            <option value="Engineer">Engineer</option>
+                                            <option value="Admin">Admin</option>
+                                        </select>
+                                    </div>
+                                    {/* <div className="mb-3">
                                     <label htmlFor="userStatusInput" className="form-label">
                                         Status *
                                     </label>
@@ -1241,17 +1260,18 @@ const OrganizationDetail = ({ id }) => {
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
+                                </div> */}
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowAddUserModal(false)}>
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="btn btn-primary">
+                                        Save
+                                    </button>
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowAddUserModal(false)}>
-                                    Cancel
-                                </button>
-                                <button type="button" className="btn btn-primary" onClick={handleAddUser}>
-                                    Save
-                                </button>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             )}

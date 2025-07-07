@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, Star } from 'lucide-react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export const SetPassword = ({ passwordId }) => {
+    const navigate = useNavigate()
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -28,18 +31,18 @@ export const SetPassword = ({ passwordId }) => {
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                setIsSubmitting(true);
+                //setIsSubmitting(true);
 
-                const response = await axios.post(
-                    "http://62.72.13.179:5000/set-password/",
+                const response = await axios.patch(
+                    "http://62.72.13.179:5000/users/set-password/",
                     {
-                        objectId: passwordId,
                         password,
                         confirmPassword,
                     },
                     {
                         headers: { "Content-Type": "application/json" },
-                    }
+                        params: { encryption: passwordId, } 
+                    },
                 );
 
                 console.log("Password updated successfully!", response.data);
@@ -53,9 +56,10 @@ export const SetPassword = ({ passwordId }) => {
                 } else {
                     console.error("Request setup error:", error.message);
                 }
-            } finally {
-                setIsSubmitting(false);
-            }
+            } 
+            // finally {
+            //     setIsSubmitting(false);
+            // }
         }
     };
 

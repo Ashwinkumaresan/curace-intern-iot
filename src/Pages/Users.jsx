@@ -342,7 +342,6 @@ export default function Component() {
           username: formData.username,
           email: formData.email,
           userRole: formData.userRole,
-          status: "Pending", // Set default status for new users to "Pending"
         };
 
         const response = await axios.post("http://62.72.13.179:5000/users/add/", newUserPayload, {

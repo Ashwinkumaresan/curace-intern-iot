@@ -41,6 +41,8 @@ export default function Login() {
       );
       localStorage.setItem("access_token", loginResponse.data.accessToken);
       localStorage.setItem("Customer Type", loginResponse.data.customerType);
+      localStorage.setItem("User Role", loginResponse.data.userRole);
+      localStorage.setItem("User Id", loginResponse.data.userId);
       localStorage.setItem("email", formData.email);
       localStorage.setItem("timestamp", new Date().getTime());
       navigate("/users");

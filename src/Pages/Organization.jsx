@@ -195,7 +195,7 @@ export default function Component() {
     setIsEditing(true)
     // When editing, set the editingOrgId to the local `id`
     // This is used for validation (excluding the current org from duplicate email check)
-    setEditingOrgId(org.id) 
+    setEditingOrgId(org.id)
     setFormErrors({})
 
     // Wait for Bootstrap to load before trying to use it
@@ -221,6 +221,8 @@ export default function Component() {
     setTimeout(showModal, 100)
   }
 
+  // Handle adding a new organization
+  // This function is called when the user clicks the "Add Organization" button
   const handleAddNew = () => {
     resetForm()
 
@@ -246,102 +248,105 @@ export default function Component() {
     setTimeout(showModal, 100)
   }
 
-  
-const handleSubmit = async () => {
+  // Handle form submission for both adding and editing organizations
+  // This function is called when the user clicks the "Save" button in the modal
+  const handleSubmit = async () => {
     if (!validateForm()) {
-        return; // Stop if form validation fails
+      return; // Stop if form validation fails
     }
 
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-        console.error("Access token not found. Please log in.");
-        alert("Authentication required. Please log in.");
-        localStorage.clear();
-        navigate("/"); // Redirect to login
-        return;
+      console.error("Access token not found. Please log in.");
+      alert("Authentication required. Please log in.");
+      localStorage.clear();
+      navigate("/"); // Redirect to login
+      return;
     }
 
     try {
-        if (isEditing && editingOrgId !== null) {
-            // --- API CALL FOR UPDATING EXISTING ORGANIZATION ---
-            const updatePayload = {
-                organizationName: formData.organizationName,
-                contactName: formData.contactName,
-                phoneNo: formData.phoneNo, // Make sure your form's state uses 'phoneNo'
-                email: formData.email,
-                customerType: formData.customerType,
-                address: formData.address,
-                country: formData.country,
-                state: formData.state,
-                city: formData.city,
-                objectId: editingOrgId, 
-            };
-            console.log("Updating organization with payload:", updatePayload);
+      if (isEditing && editingOrgId !== null) {
+        // --- API CALL FOR UPDATING EXISTING ORGANIZATION ---
+        const updatePayload = {
+          organizationName: formData.organizationName,
+          contactName: formData.contactName,
+          phoneNo: formData.phoneNo, // Make sure your form's state uses 'phoneNo'
+          email: formData.email,
+          customerType: formData.customerType,
+          address: formData.address,
+          country: formData.country,
+          state: formData.state,
+          city: formData.city,
+          objectId: editingOrgId,
+        };
+        console.log("Updating organization with payload:", updatePayload);
 
-            const response = await axios.patch( // PATCH or PUT based on your backend
-                `http://62.72.13.179:5000/organization/edit/`, // Your organization edit endpoint
-                updatePayload, // Sending JSON payload
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json", // Correct for JSON payload
-                    },
-                }
-            );
+        const response = await axios.patch( // PATCH or PUT based on your backend
+          `http://62.72.13.179:5000/organization/edit/`, // Your organization edit endpoint
+          updatePayload, // Sending JSON payload
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json", // Correct for JSON payload
+            },
+          }
+        );
 
-            console.log("Organization updated successfully:", response.data);
-            alert("Organization updated successfully!");
+        console.log("Organization updated successfully:", response.data);
+        alert("Organization updated successfully!");
 
-            await fetchOrganization(); // Re-fetch all organizations to update the list
-        } else {
-            // --- API CALL FOR CREATING NEW ORGANIZATION ---
-            const newOrganizationPayload = {
-                organizationName: formData.organizationName,
-                contactName: formData.contactName,
-                phoneNo: formData.phoneNo, 
-                email: formData.email,
-                customerType: formData.customerType,
-                address: formData.address,
-                country: formData.country,
-                state: formData.state,
-                city: formData.city,
-                status: "Active", 
-            };
-            console.log("Creating new organization with payload:", newOrganizationPayload);
+        await fetchOrganization(); // Re-fetch all organizations to update the list
+      } else {
+        // --- API CALL FOR CREATING NEW ORGANIZATION ---
+        const newOrganizationPayload = {
+          organizationName: formData.organizationName,
+          contactName: formData.contactName,
+          phoneNo: formData.phoneNo,
+          email: formData.email,
+          customerType: formData.customerType,
+          address: formData.address,
+          country: formData.country,
+          state: formData.state,
+          city: formData.city,
+          status: "Active",
+        };
+        console.log("Creating new organization with payload:", newOrganizationPayload);
 
-            const response = await axios.post(
-                "http://62.72.13.179:5000/organization/add/", // Your organization add endpoint
-                newOrganizationPayload, // Sending JSON payload
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json", // Correct for JSON payload
-                    },
-                }
-            );
+        const response = await axios.post(
+          "http://62.72.13.179:5000/organization/add/", // Your organization add endpoint
+          newOrganizationPayload, // Sending JSON payload
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json", // Correct for JSON payload
+            },
+          }
+        );
 
-            console.log("New organization created successfully:", response.data);
-            alert("Organization added successfully!");
+        console.log("New organization created successfully:", response.data);
+        alert("Organization added successfully!");
 
-            await fetchOrganization(); // Re-fetch all organizations to update the list
-        }
+        await fetchOrganization(); // Re-fetch all organizations to update the list
+      }
     } catch (error) {
-        console.error("Error submitting organization data:", error.response?.data || error.message);
-        const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to save organization. Please try again.";
-        alert(`Error: ${errorMessage}`);
+      console.error("Error submitting organization data:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to save organization. Please try again.";
+      alert(`Error: ${errorMessage}`);
 
-        if (error.response?.status === 401) {
-            alert("Session expired. Please log in again.");
-            localStorage.clear();
-            navigate("/"); // Redirect on 401
-        }
+      if (error.response?.status === 401) {
+        alert("Session expired. Please log in again.");
+        localStorage.clear();
+        navigate("/"); // Redirect on 401
+      }
     } finally {
-        // These run regardless of success or failure in the try/catch blocks
-        resetForm();
-        handleModalClose();
+      // These run regardless of success or failure in the try/catch blocks
+      resetForm();
+      handleModalClose();
     }
-};
+  };
 
+  // Close modal and reset form
+  // This function is called when the modal close button is clicked
   const handleModalClose = () => {
     resetForm()
 
@@ -362,15 +367,17 @@ const handleSubmit = async () => {
     }
   }
 
+  // Function to toggle organization status
+  // This function is called when the user clicks the "Activate" or "Deactivate" button
   const handleToggleOrganizationStatus = async (organization) => {
     // organization object should contain at least { objectId: string, status: string }
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-        console.error("Access token not found. Please log in.");
-        alert("Authentication required. Please log in.");
-        localStorage.clear();
-        navigate("/");
-        return;
+      console.error("Access token not found. Please log in.");
+      alert("Authentication required. Please log in.");
+      localStorage.clear();
+      navigate("/");
+      return;
     }
 
     let endpoint = "";
@@ -378,53 +385,54 @@ const handleSubmit = async () => {
 
     // Determine the action based on the organization's current status
     if (organization.status === "Active") {
-        // If currently Active, the action is to Inactivate
-        endpoint = "http://62.72.13.179:5000/organization/inactivate/";
-        successMessage = "Organization inactivated successfully!";
+      // If currently Active, the action is to Inactivate
+      endpoint = "http://62.72.13.179:5000/organization/inactivate/";
+      successMessage = "Organization inactivated successfully!";
     } else if (organization.status === "Inactive") {
-        // If currently Inactive, the action is to Activate
-        endpoint = "http://62.72.13.179:5000/organization/activate/";
-        successMessage = "Organization activated successfully!";
+      // If currently Inactive, the action is to Activate
+      endpoint = "http://62.72.13.179:5000/organization/activate/";
+      successMessage = "Organization activated successfully!";
     } else {
-        // Handle any other unexpected status or default to activate if unsure
-        console.warn("Unexpected organization status, defaulting to activate:", organization.status);
-        endpoint = "http://62.72.13.179:5000/organization/activate/";
-        successMessage = "Organization status updated successfully!";
+      // Handle any other unexpected status or default to activate if unsure
+      console.warn("Unexpected organization status, defaulting to activate:", organization.status);
+      endpoint = "http://62.72.13.179:5000/organization/activate/";
+      successMessage = "Organization status updated successfully!";
     }
 
     try {
-        const payload = {
-            objectId: organization.objectId, // Send the organization's objectId
-            // The status change is implied by the endpoint, so no need to send 'status' in payload
-        };
+      const payload = {
+        objectId: organization.objectId, // Send the organization's objectId
+        // The status change is implied by the endpoint, so no need to send 'status' in payload
+      };
 
-        const response = await axios.patch( // Using PATCH as it's common for partial updates/status changes
-            endpoint,
-            payload, // Sending JSON payload
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json", // Correct for JSON payload
-                },
-            }
-        );
-
-        console.log(`Organization status operation successful:`, response.data);
-        alert(successMessage);
-        await fetchOrganization(); // Re-fetch organization data to update UI and reflect the change
-    } catch (error) {
-        console.error("Error updating organization status:", error.response?.data || error.message);
-        const errorMessage = error.response?.data?.message || "Something went wrong during status update.";
-        alert(`Failed to update organization status: ${errorMessage}`);
-
-        // Handle token expiration or unauthorized errors
-        if (error.response?.status === 401) {
-            alert("Session expired. Please log in again.");
-            localStorage.clear();
-            navigate("/");
+      const response = await axios.patch( // Using PATCH as it's common for partial updates/status changes
+        endpoint,
+        null, // Sending body as null since we're only using the endpoint to determine action
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json", // Correct for JSON payload
+          },
+          params: payload, // Sending the objectId as a query parameter
         }
+      );
+
+      console.log(`Organization status operation successful:`, response.data);
+      alert(successMessage);
+      await fetchOrganization(); // Re-fetch organization data to update UI and reflect the change
+    } catch (error) {
+      console.error("Error updating organization status:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Something went wrong during status update.";
+      alert(`Failed to update organization status: ${errorMessage}`);
+
+      // Handle token expiration or unauthorized errors
+      if (error.response?.status === 401) {
+        alert("Session expired. Please log in again.");
+        localStorage.clear();
+        navigate("/");
+      }
     }
-};
+  };
 
   const handleNavigateToDetail = (orgObjectId) => { // Changed parameter name to orgObjectId for clarity
     // Navigate to organization detail page with objectId in URL
@@ -438,6 +446,8 @@ const handleSubmit = async () => {
   )
   const allOrgCount = organizations.length
 
+  // Function to get the class for the active tab
+  // This function is used to apply the 'active' class to the currently selected tab
   const getTabClass = (tabName) => {
     return `nav-link ${activeTab === tabName ? "active" : ""}`
   }
@@ -488,16 +498,16 @@ const handleSubmit = async () => {
     }
   };
 
-
+  // Fetch organizations on component mount
   useEffect(() => {
     fetchOrganization();
   }, []);
 
   return (
     <>
-    <MyNavbar/>
+      <MyNavbar />
       <div className="container-fluid p-4" style={{
-        marginTop:"10vh"
+        marginTop: "10vh"
       }}>
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -636,7 +646,7 @@ const handleSubmit = async () => {
                         <td>
                           <button
                             className="btn btn-link p-0 fw-semibold text-decoration-none"
-                            onClick={() => handleNavigateToDetail(org.objectId)} 
+                            onClick={() => handleNavigateToDetail(org.objectId)}
                             style={{ color: '#007bff', cursor: 'pointer' }}
                           >
                             {org.organizationName}
