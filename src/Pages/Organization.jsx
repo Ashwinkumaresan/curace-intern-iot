@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useState, useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import MyNavbar from "../Component/Navbar/Navbar"
 
 // Mock data (keeping it commented out as in your original)
 // const mockOrganizations = [...]
@@ -151,9 +152,6 @@ export default function Component() {
       errors.customerType = "Customer type is required"
     }
 
-    // Check for duplicate email (excluding current organization when editing)
-    // Note: Here, `editingOrgId` refers to the local `id` which is currently `index + 1`.
-    // If your backend's `objectId` is used for edit, you'd need to adjust this.
     const existingOrg = organizations.find(
       (org) => org.email.toLowerCase() === formData.email.toLowerCase() && org.id !== editingOrgId,
     )
@@ -276,9 +274,7 @@ const handleSubmit = async () => {
                 country: formData.country,
                 state: formData.state,
                 city: formData.city,
-                objectId: editingOrgId, // Crucial for identifying which organization to update
-                // Add any other fields you allow to be updated (e.g., 'status')
-                // status: formData.status,
+                objectId: editingOrgId, 
             };
             console.log("Updating organization with payload:", updatePayload);
 
@@ -302,15 +298,14 @@ const handleSubmit = async () => {
             const newOrganizationPayload = {
                 organizationName: formData.organizationName,
                 contactName: formData.contactName,
-                phoneNo: formData.phoneNo, // Make sure your form's state uses 'phoneNo'
+                phoneNo: formData.phoneNo, 
                 email: formData.email,
                 customerType: formData.customerType,
                 address: formData.address,
                 country: formData.country,
                 state: formData.state,
                 city: formData.city,
-                status: "Active", // Default status for new organizations
-                // Add any other required fields for a new organization here
+                status: "Active", 
             };
             console.log("Creating new organization with payload:", newOrganizationPayload);
 
@@ -500,7 +495,10 @@ const handleSubmit = async () => {
 
   return (
     <>
-      <div className="container-fluid p-4">
+    <MyNavbar/>
+      <div className="container-fluid p-4" style={{
+        marginTop:"10vh"
+      }}>
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import MyNavbar from "../Component/Navbar/Navbar";
 
 const defaultColumns = {
   username: true,
@@ -210,8 +211,6 @@ export default function Component() {
     try {
       const payload = {
         objectId: user.objectId,
-        // You don't need to send the 'status' field in the payload
-        // because the endpoint itself implies the status change.
       };
 
       const response = await axios.patch(
@@ -369,12 +368,16 @@ export default function Component() {
 
   return (
     <>
-      <div className="container-fluid p-4">
+    <MyNavbar/>
+      <div className="container-fluid p-4" style={{
+        marginTop:"10vh"
+      }}>
         {/* Header */}
         <div
           className="d-flex justify-content-between align-items-center mb-4 position-sticky top-0"
           style={{
             backgroundColor: "white",
+            zIndex:"99"
           }}
         >
           <div>

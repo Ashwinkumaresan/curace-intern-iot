@@ -40,6 +40,7 @@ export default function Login() {
         }
       );
       localStorage.setItem("access_token", loginResponse.data.accessToken);
+      localStorage.setItem("Customer Type", loginResponse.data.customerType);
       localStorage.setItem("email", formData.email);
       localStorage.setItem("timestamp", new Date().getTime());
       navigate("/users");
@@ -67,7 +68,7 @@ export default function Login() {
             <div className="auth-card mt-5 border p-5 p-md-5 rounded ">
               <div className="card-header text-center">
                 <Link to={"/"} className="text-center">
-                  <img src="/Faraday_ozone_logo.svg" width={170} className="text-center" alt="" />
+                  <img src="/Faraday_ozone_logo.svg" width={170} className="text-center" alt="Faraday Ozone" />
                 </Link>
                 {/* <h4 className="mb-0 fw-bold my-4">Login</h4> */}
                 <p className="text-muted my-2">Sign in to your account</p>
