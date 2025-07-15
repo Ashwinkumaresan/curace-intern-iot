@@ -105,7 +105,7 @@ const OrganizationDetail = ({ id }) => {
         }
 
         try {
-            const response = await axios.get("http://62.72.13.179:5000/organization/detail/", {
+            const response = await axios.get("https://api.ozopool.in/organization/detail/", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
@@ -169,10 +169,10 @@ const OrganizationDetail = ({ id }) => {
 
         // Determine the action based on the 'targetStatus' received
         if (targetStatus === "Inactive") {
-            endpoint = "http://62.72.13.179:5000/organization/inactivate/";
+            endpoint = "https://api.ozopool.in/organization/inactivate/";
             successMessage = `Organization ${organization.organizationName} inactivated successfully!`;
         } else if (targetStatus === "Active") {
-            endpoint = "http://62.72.13.179:5000/organization/activate/";
+            endpoint = "https://api.ozopool.in/organization/activate/";
             successMessage = `Organization ${organization.organizationName} activated successfully!`;
         } else {
             console.warn("Invalid target status provided:", targetStatus);
@@ -277,7 +277,7 @@ const OrganizationDetail = ({ id }) => {
 
             try {
                 const response = await axios.post(
-                    "http://62.72.13.179:5000/users/add/",
+                    "https://api.ozopool.in/users/add/",
                     newUserPayload,
                     {
                         headers: {
@@ -347,7 +347,7 @@ const OrganizationDetail = ({ id }) => {
                 );
 
                 const response = await axios.post(
-                    "http://62.72.13.179:5000/organization/add/",
+                    "https://api.ozopool.in/organization/add/",
                     newOrganizationPayload,
                     {
                         headers: {

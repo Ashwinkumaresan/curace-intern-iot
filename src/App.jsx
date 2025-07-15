@@ -12,6 +12,7 @@ import { Crypto } from './Component/Crypto'
 import Login from './Pages/Login'
 import OrganizationDetail from "./Pages/OrganisationDetail"
 import { SetPassword } from "./Pages/SetPassword"
+import Dashboard from "./Component/Device Components/Dashboard"
 
 function App() {
 
@@ -66,6 +67,9 @@ function App() {
         {/* Dynamic route with URL param */}
         <Route path='/organization/:id' element={<OrgId />} />
         <Route path='/set-password/:passwordId' element={<SetPasswordPara />} />
+
+        {/* Device */}
+        <Route path="/device/details" element={<Dashboard/>} />
         
       </Routes>
     </HashRouter>

@@ -282,7 +282,7 @@ export default function Component() {
         console.log("Updating organization with payload:", updatePayload);
 
         const response = await axios.patch( // PATCH or PUT based on your backend
-          `http://62.72.13.179:5000/organization/edit/`, // Your organization edit endpoint
+          `https://api.ozopool.in/organization/edit/`, // Your organization edit endpoint
           updatePayload, // Sending JSON payload
           {
             headers: {
@@ -313,7 +313,7 @@ export default function Component() {
         console.log("Creating new organization with payload:", newOrganizationPayload);
 
         const response = await axios.post(
-          "http://62.72.13.179:5000/organization/add/", // Your organization add endpoint
+          "https://api.ozopool.in/organization/add/", // Your organization add endpoint
           newOrganizationPayload, // Sending JSON payload
           {
             headers: {
@@ -386,16 +386,16 @@ export default function Component() {
     // Determine the action based on the organization's current status
     if (organization.status === "Active") {
       // If currently Active, the action is to Inactivate
-      endpoint = "http://62.72.13.179:5000/organization/inactivate/";
+      endpoint = "https://api.ozopool.in/organization/inactivate/";
       successMessage = "Organization inactivated successfully!";
     } else if (organization.status === "Inactive") {
       // If currently Inactive, the action is to Activate
-      endpoint = "http://62.72.13.179:5000/organization/activate/";
+      endpoint = "https://api.ozopool.in/organization/activate/";
       successMessage = "Organization activated successfully!";
     } else {
       // Handle any other unexpected status or default to activate if unsure
       console.warn("Unexpected organization status, defaulting to activate:", organization.status);
-      endpoint = "http://62.72.13.179:5000/organization/activate/";
+      endpoint = "https://api.ozopool.in/organization/activate/";
       successMessage = "Organization status updated successfully!";
     }
 
@@ -464,7 +464,7 @@ export default function Component() {
     }
 
     try {
-      const response = await axios.get("http://62.72.13.179:5000/organization/", {
+      const response = await axios.get("https://api.ozopool.in/organization/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -195,16 +195,16 @@ export default function Component() {
     // Determine the action based on the current status
     if (user.status === "Active" || user.status === "Pending") {
       // If currently Active or Pending, the action is to Inactivate
-      endpoint = "http://62.72.13.179:5000/users/inactivate/";
+      endpoint = "https://api.ozopool.in/users/inactivate/";
       successMessage = "User inactivated successfully!";
     } else if (user.status === "Inactive") {
       // If currently Inactive, the action is to Activate
-      endpoint = "http://62.72.13.179:5000/users/activate/";
+      endpoint = "https://api.ozopool.in/users/activate/";
       successMessage = "User activated successfully!";
     } else {
       // Handle any other unexpected status or default to activate if unsure
       console.warn("Unexpected user status, defaulting to activate:", user.status);
-      endpoint = "http://62.72.13.179:5000/users/activate/";
+      endpoint = "https://api.ozopool.in/users/activate/";
       successMessage = "User status updated successfully!";
     }
 
@@ -254,7 +254,7 @@ export default function Component() {
       return;
     }
     try {
-      const response = await axios.get("http://62.72.13.179:5000/users/", {
+      const response = await axios.get("https://api.ozopool.in/users/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -314,7 +314,7 @@ export default function Component() {
         console.log(updatePayload);
 
         const response = await axios.patch(
-          "http://62.72.13.179:5000/users/edit/",
+          "https://api.ozopool.in/users/edit/",
           updatePayload,
           {
             headers: {
@@ -344,7 +344,7 @@ export default function Component() {
           userRole: formData.userRole,
         };
 
-        const response = await axios.post("http://62.72.13.179:5000/users/add/", newUserPayload, {
+        const response = await axios.post("https://api.ozopool.in/users/add/", newUserPayload, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",

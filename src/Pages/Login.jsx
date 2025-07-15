@@ -32,7 +32,7 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const loginResponse = await axios.post(
-        "http://62.72.13.179:5000/users/login/",
+        "https://api.ozopool.in/users/login/",
         formData,
         {
           headers: { "Content-Type": "application/json" },

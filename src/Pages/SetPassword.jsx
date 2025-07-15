@@ -34,7 +34,7 @@ export const SetPassword = ({ passwordId }) => {
                 //setIsSubmitting(true);
 
                 const response = await axios.patch(
-                    "http://62.72.13.179:5000/users/set-password/",
+                    "https://api.ozopool.in/users/set-password/",
                     {
                         password,
                         confirmPassword,
