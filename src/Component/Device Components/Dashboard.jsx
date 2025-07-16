@@ -17,7 +17,7 @@ import HistoryChart from "./HistoryChart"
 import { useMQTT } from "../../Hooks/useMQTT"
 import { useSensorData } from "../../Hooks/useSensorData"
 
-const Dashboard = () => {
+const Dashboard = ( {deviceId} ) => {
   const [showSettings, setShowSettings] = useState(false)
   const [showChart, setShowChart] = useState(null)
   const { sensorData, systemStatus } = useSensorData()

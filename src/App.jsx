@@ -13,6 +13,7 @@ import Login from './Pages/Login'
 import OrganizationDetail from "./Pages/OrganisationDetail"
 import { SetPassword } from "./Pages/SetPassword"
 import Dashboard from "./Component/Device Components/Dashboard"
+import DeviceManagement from "./Pages/Device"
 
 function App() {
 
@@ -54,6 +55,10 @@ function App() {
     const { passwordId } = useParams(); // Extract word from route
     return <SetPassword passwordId={passwordId} />; // Passing as prop
   };
+  const SetDeviceId = () => {
+  const { deviceId } = useParams(); // Extract from URL
+  return <Dashboard deviceId={deviceId} />; // Pass as prop
+};
   return (
     <HashRouter>
       <Routes>
@@ -69,7 +74,8 @@ function App() {
         <Route path='/set-password/:passwordId' element={<SetPasswordPara />} />
 
         {/* Device */}
-        <Route path="/device/details" element={<Dashboard/>} />
+        <Route path="/device" element={<DeviceManagement/>} />
+        <Route path="/device/details/:deviceId" element={<SetDeviceId />} />
         
       </Routes>
     </HashRouter>

@@ -565,9 +565,9 @@ export default function Component() {
                     <i className="bi bi-funnel me-2"></i>
                     Columns
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
+                  <ul className="dropdown-menu dropdown-menu-start">
                     {Object.entries(columnLabels).map(([key, label]) => (
-                      <li key={key}>
+                      <li key={key} >
                         <div className="dropdown-item-text">
                           <div className="form-check">
                             <input
@@ -602,7 +602,7 @@ export default function Component() {
           </div>
         </div>
         {/* Tabs and Table */}
-        <div className="card">
+        <div className="card ">
           <div className="card-body">
             {/* Tabs */}
             <ul className="nav nav-tabs mb-3">
