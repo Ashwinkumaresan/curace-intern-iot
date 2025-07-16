@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Settings,
   User,
@@ -15,25 +15,105 @@ import {
 import SettingsPanel from "./SettingsPanel"
 import HistoryChart from "./HistoryChart"
 import { useMQTT } from "../../Hooks/useMQTT"
-import { useSensorData } from "../../Hooks/useSensorData"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
-const Dashboard = ( {deviceId} ) => {
+const Dashboard = ({ deviceId }) => {
+  const navigate = useNavigate()
   const [showSettings, setShowSettings] = useState(false)
   const [showChart, setShowChart] = useState(null)
-  const { sensorData, systemStatus } = useSensorData()
-  const { isConnected } = useMQTT()
+  const [isConnected, setIsConnected] = useState(false)
+  const [deviceData, setDeviceData] = useState({
+    ph: 0,
+    orp: 0,
+    ozoneLevel: 0,
+    temperature: 0,
+    minimumPh: 0,
+    maximumPh: 0,
+    minimumORP: 0,
+    maximumORP: 0,
+    minimumTemperature: 0,
+    maximumTemperature: 0,
+    user_id: "",
+    power: false
+  })
+
+  const fetchDeviceDetails = async () => {
+    console.log(deviceId);
+
+    const accessToken = localStorage.getItem("access_token")
+    console.log(accessToken)
+    if (!accessToken) {
+      console.error("Access token not found. Please log in.")
+      alert("Authentication required. Please log in.")
+      localStorage.clear()
+      navigate("/")
+      setLoading(false)
+      return
+    }
+    try {
+      const response = await axios.get("https://api.ozopool.in/devices/detail/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        params: { deviceId: deviceId }
+      })
+      console.log(response.data)
+      const combinedData = {
+        user_id: response.data.user_id,
+        ...response.data.data
+      }
+      setDeviceData(combinedData)
+      setIsConnected(true)
+
+    } catch (err) {
+      setIsConnected(false)
+      console.error("Error fetching device details:", err.response?.data || err.message)
+      if (err.response?.status === 401) {
+        alert("Session expired. Please log in again.")
+        localStorage.clear()
+        // You can call onNavigateBack or handle navigation as needed
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchDeviceDetails()
+  }, [])
+  useEffect(() => {
+    if (deviceData) {
+      console.log("User ID:", deviceData.user_id)
+      console.log("PH:", deviceData.ph)
+      console.log("ORP:", deviceData.orp)
+      console.log("Ozone Level:", deviceData.ozoneLevel)
+    }
+  }, [deviceData])
+
+
+
 
   const getStatusColor = (value, type) => {
+    if (!deviceData) return "bg-secondary";
     const thresholds = {
-      ph: { min: 6.8, max: 7.6 },
-      orp: { min: 250, max: 950 },
-      temperature: { min: 26, max: 32 },
-    }
+      ph: {
+        min: deviceData.minimumPh,
+        max: deviceData.maximumPh,
+      },
+      orp: {
+        min: deviceData.minimumORP,
+        max: deviceData.maximumORP,
+      },
+      temperature: {
+        min: deviceData.minimumTemperature,
+        max: deviceData.maximumTemperature,
+      }
 
+    }
     const threshold = thresholds[type]
     if (!threshold) return "bg-success"
 
-    if (value < threshold.min || value > threshold.max) {
+    if (value < threshold.min || value > threshold.max || value == 0) {
       return "bg-danger"
     } else if (value < threshold.min + 0.2 || value > threshold.max - 0.2) {
       return "bg-warning"
@@ -62,11 +142,8 @@ const Dashboard = ( {deviceId} ) => {
             <p className="small text-muted mb-0">Last Update</p>
             <p className="fw-semibold mb-0">{formatTime(new Date())}</p>
           </div>
-          <button className="btn btn-outline-secondary btn-sm" onClick={() => setShowSettings(true)}>
-            <Settings size={18} />
-          </button>
-          <button className="btn btn-outline-secondary btn-sm">
-            <User size={18} />
+          <button className="btn text-secondary btn-sm" onClick={() => setShowSettings(true)}>
+            <Settings size={25} />
           </button>
         </div>
       </div>
@@ -74,9 +151,11 @@ const Dashboard = ( {deviceId} ) => {
       {/* Status Cards Grid */}
       <div className="row g-3 mb-4">
         {/* Pool Health */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className="card bg-success text-white border-0 shadow-sm h-100 cursor-pointer"
+            className="card bg-success text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer"
             onClick={() => setShowChart({ type: "poolHealth", title: "Pool Health History" })}
           >
             <div className="card-body">
@@ -94,9 +173,11 @@ const Dashboard = ( {deviceId} ) => {
         </div>
 
         {/* pH Level */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className={`card ${getStatusColor(sensorData.ph, "ph")} text-white border-0 shadow-sm h-100 cursor-pointer`}
+            className={`card ${getStatusColor(deviceData.ph, "ph")} text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer`}
             onClick={() => setShowChart({ type: "ph", title: "pH Level History" })}
           >
             <div className="card-body">
@@ -107,16 +188,18 @@ const Dashboard = ( {deviceId} ) => {
                 </div>
                 <CheckCircle size={20} />
               </div>
-              <div className="h4 fw-bold mb-1">{sensorData.ph.toFixed(1)}</div>
+              <div className="h4 fw-bold mb-1">{deviceData.ph.toFixed(1)}</div>
               <div className="small opacity-75">{formatTime(new Date())}</div>
             </div>
           </div>
         </div>
 
         {/* ORP */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className={`card ${getStatusColor(sensorData.orp, "orp")} text-white border-0 shadow-sm h-100 cursor-pointer`}
+            className={`card ${getStatusColor(deviceData.orp, "orp")} text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer`}
             onClick={() => setShowChart({ type: "orp", title: "ORP History" })}
           >
             <div className="card-body">
@@ -128,7 +211,7 @@ const Dashboard = ( {deviceId} ) => {
                 <CheckCircle size={20} />
               </div>
               <div className="h4 fw-bold mb-1">
-                {sensorData.orp.toFixed(2)} <span className="small fw-normal">mV</span>
+                {deviceData.orp.toFixed(2)} <span className="small fw-normal">mV</span>
               </div>
               <div className="small opacity-75">{formatTime(new Date())}</div>
             </div>
@@ -136,9 +219,11 @@ const Dashboard = ( {deviceId} ) => {
         </div>
 
         {/* Temperature */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className={`card ${getStatusColor(sensorData.temperature, "temperature")} text-white border-0 shadow-sm h-100 cursor-pointer`}
+            className={`card ${getStatusColor(deviceData.temperature, "temperature")} text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer`}
             onClick={() => setShowChart({ type: "temperature", title: "Temperature History" })}
           >
             <div className="card-body">
@@ -150,7 +235,7 @@ const Dashboard = ( {deviceId} ) => {
                 <CheckCircle size={20} />
               </div>
               <div className="h4 fw-bold mb-1">
-                {sensorData.temperature.toFixed(1)} <span className="small fw-normal">°C</span>
+                {deviceData.temperature.toFixed(1)} <span className="small fw-normal">°C</span>
               </div>
               <div className="small opacity-75">{formatTime(new Date())}</div>
             </div>
@@ -158,9 +243,11 @@ const Dashboard = ( {deviceId} ) => {
         </div>
 
         {/* O3 Gen */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className="card bg-success text-white border-0 shadow-sm h-100 cursor-pointer"
+            className="card bg-success text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer"
             onClick={() => setShowChart({ type: "ozone", title: "O3 Gen History" })}
           >
             <div className="card-body">
@@ -172,7 +259,7 @@ const Dashboard = ( {deviceId} ) => {
                 <CheckCircle size={20} />
               </div>
               <div className="h4 fw-bold mb-1">
-                {sensorData.ozoneLevel.toFixed(2)} <span className="small fw-normal">W</span>
+                {deviceData.ozoneLevel.toFixed(2)} <span className="small fw-normal">W</span>
               </div>
               <div className="small opacity-75">{formatTime(new Date())}</div>
             </div>
@@ -180,9 +267,11 @@ const Dashboard = ( {deviceId} ) => {
         </div>
 
         {/* Power Status */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className={`card ${systemStatus.power ? "bg-success" : "bg-danger"} text-white border-0 shadow-sm h-100 cursor-pointer`}
+            className={`card ${deviceData.power ? "bg-success" : "bg-danger"} text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer`}
             onClick={() => setShowChart({ type: "power", title: "Power Status History" })}
           >
             <div className="card-body">
@@ -193,16 +282,18 @@ const Dashboard = ( {deviceId} ) => {
                 </div>
                 <div className="bg-white bg-opacity-75 rounded-circle status-dot"></div>
               </div>
-              <div className="h4 fw-bold mb-1">{systemStatus.power ? "ON" : "OFF"}</div>
+              <div className="h4 fw-bold mb-1">{deviceData.power ? "ON" : "OFF"}</div>
               <div className="small opacity-75">{formatTime(new Date())}</div>
             </div>
           </div>
         </div>
 
         {/* System Status */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-lg-3"  style={{
+          height:"30vh"
+        }}>
           <div
-            className="card bg-success text-white border-0 shadow-sm h-100 cursor-pointer"
+            className="card bg-success text-white py-3 px-2 fs-4 border-0 shadow-sm h-100 cursor-pointer"
             onClick={() => setShowChart({ type: "system", title: "System Status History" })}
           >
             <div className="card-body">
@@ -221,8 +312,7 @@ const Dashboard = ( {deviceId} ) => {
       </div>
 
       {/* Bottom Section */}
-      <div className="row g-4">
-        {/* Filtration Tracking */}
+      {/* <div className="row g-4">
         <div className="col-lg-6">
           <div className="card shadow-sm bg-white bg-opacity-75">
             <div className="card-header bg-transparent border-0 pb-2">
@@ -263,7 +353,6 @@ const Dashboard = ( {deviceId} ) => {
           </div>
         </div>
 
-        {/* System Alarms */}
         <div className="col-lg-6">
           <div className="card shadow-sm bg-white bg-opacity-75">
             <div className="card-header bg-transparent border-0 pb-2">
@@ -274,7 +363,7 @@ const Dashboard = ( {deviceId} ) => {
                 </div>
                 <div className="text-end">
                   <p className="small text-muted mb-0">Ozone Power</p>
-                  <p className="fw-semibold mb-0">{sensorData.ozoneLevel.toFixed(2)}W</p>
+                  <p className="fw-semibold mb-0">{deviceData.ozoneLevel.toFixed(2)}W</p>
                 </div>
               </div>
             </div>
@@ -286,7 +375,7 @@ const Dashboard = ( {deviceId} ) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* MQTT Connection Status */}
       <div className="position-fixed bottom-0 end-0 m-3">
@@ -296,10 +385,10 @@ const Dashboard = ( {deviceId} ) => {
       </div>
 
       {/* Settings Panel */}
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} deviceId={deviceId} />}
 
       {/* History Chart Modal */}
-      {showChart && <HistoryChart type={showChart.type} title={showChart.title} onClose={() => setShowChart(null)} />}
+      {/* {showChart && <HistoryChart type={showChart.type} title={showChart.title} onClose={() => setShowChart(null)} />} */}
     </div>
   )
 }

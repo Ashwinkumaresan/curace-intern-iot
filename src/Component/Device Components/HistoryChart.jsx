@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
 import { Clock } from "lucide-react"

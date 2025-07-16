@@ -461,9 +461,7 @@ export default function Component() {
         </div>
 
         {/* Tabs and Table */}
-        <div className="card" style={{
-          zIndex:"-1"
-        }}>
+        <div className="card">
           <div className="card-body">
             {/* Tabs */}
             <ul className="nav nav-tabs mb-3">

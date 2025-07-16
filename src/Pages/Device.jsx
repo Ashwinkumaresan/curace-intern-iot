@@ -133,8 +133,10 @@ export default function DeviceManagement() {
     //   })
     const [formData, setFormData] = useState({
         deviceId: "",
-        mqttTopic: "",
+        mqttTopicRead: "",
+        mqttTopicWrite: "",
     });
+
 
     const [isEditing, setIsEditing] = useState(false)
     const [editingDeviceId, setEditingDeviceId] = useState(null)
@@ -210,9 +212,13 @@ export default function DeviceManagement() {
         // if (!formData.organizationId) {
         //   errors.organizationId = "Organization is required"
         // }
-        if (!formData.mqttTopic) {
-            errors.mqttTopic = "MQTT Topic is required";
+        if (!formData.mqttTopicRead) {
+            errors.mqttTopicRead = "MQTT Read Topic is required";
         }
+        if (!formData.mqttTopicWrite) {
+            errors.mqttTopicWrite = "MQTT Write Topic is required";
+        }
+
 
 
         const existingDevice = devices.find(
@@ -233,8 +239,10 @@ export default function DeviceManagement() {
         // })
         setFormData({
             deviceId: "",
-            mqttTopic: "",
+            mqttTopicRead: "",
+            mqttTopicWrite: "",
         });
+
 
         setIsEditing(false)
         setEditingDeviceId(null)
@@ -541,8 +549,10 @@ export default function DeviceManagement() {
         try {
             const payload = {
                 deviceId: formData.deviceId,
-                mqttTopic: formData.mqttTopic,
+                mqttTopicRead: formData.mqttTopicRead,
+                mqttTopicWrite: formData.mqttTopicWrite,
             };
+
 
             const response = await axios.post("https://api.ozopool.in/devices/add/", payload, {
                 headers: {
@@ -585,50 +595,50 @@ export default function DeviceManagement() {
 
     const handleEditDevice = async () => {
 
-  const accessToken = localStorage.getItem("access_token");
-  if (!accessToken) {
-    alert("Authentication required. Please log in.");
-    localStorage.clear();
-    navigate("/");
-    return;
-  }
+        const accessToken = localStorage.getItem("access_token");
+        if (!accessToken) {
+            alert("Authentication required. Please log in.");
+            localStorage.clear();
+            navigate("/");
+            return;
+        }
 
-  try {
-    const payload = {
-      deviceId: editingDeviceId, // backend should use this to identify device
-      state: formData.state,
-      city: formData.city,
+        try {
+            const payload = {
+                deviceId: editingDeviceId, // backend should use this to identify device
+                state: formData.state,
+                city: formData.city,
+            };
+            console.log(payload);
+
+
+            const response = await axios.patch("https://api.ozopool.in/devices/edit/", payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("Device updated:", response.data);
+
+            // Update device in UI
+            setDevices((prev) =>
+                prev.map((device) =>
+                    device.id === editingDeviceId
+                        ? { ...device, state: formData.state, city: formData.city }
+                        : device
+                )
+            );
+
+            alert("Device updated successfully!");
+            fetchDeviceList()
+            resetForm();
+            handleModalClose();
+        } catch (error) {
+            console.error("Error updating device:", error.response?.data || error.message);
+            alert("Failed to update device.");
+        }
     };
-    console.log(payload);
-    
-
-    const response = await axios.patch("https://api.ozopool.in/devices/edit/", payload, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    console.log("Device updated:", response.data);
-
-    // Update device in UI
-    setDevices((prev) =>
-      prev.map((device) =>
-        device.id === editingDeviceId
-          ? { ...device, state: formData.state, city: formData.city }
-          : device
-      )
-    );
-
-    alert("Device updated successfully!");
-    fetchDeviceList()
-    resetForm();
-    handleModalClose();
-  } catch (error) {
-    console.error("Error updating device:", error.response?.data || error.message);
-    alert("Failed to update device.");
-  }
-};
 
 
 
@@ -911,16 +921,33 @@ export default function DeviceManagement() {
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">MQTT Topic</label>
+                                    <label className="form-label">MQTT Read Topic</label>
                                     <input
                                         type="text"
-                                        className={`form-control ${formErrors.mqttTopic ? "is-invalid" : ""}`}
-                                        value={formData.mqttTopic}
-                                        onChange={(e) => handleFormChange("mqttTopic", e.target.value)}
-                                        placeholder="Enter MQTT Topic"
+                                        className={`form-control ${formErrors.mqttTopicRead ? "is-invalid" : ""}`}
+                                        value={formData.mqttTopicRead}
+                                        onChange={(e) => handleFormChange("mqttTopicRead", e.target.value)}
+                                        placeholder="Enter MQTT Read Topic"
                                     />
-                                    {formErrors.mqttTopic && <div className="invalid-feedback">{formErrors.mqttTopic}</div>}
+                                    {formErrors.mqttTopicRead && (
+                                        <div className="invalid-feedback">{formErrors.mqttTopicRead}</div>
+                                    )}
                                 </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">MQTT Write Topic</label>
+                                    <input
+                                        type="text"
+                                        className={`form-control ${formErrors.mqttTopicWrite ? "is-invalid" : ""}`}
+                                        value={formData.mqttTopicWrite}
+                                        onChange={(e) => handleFormChange("mqttTopicWrite", e.target.value)}
+                                        placeholder="Enter MQTT Write Topic"
+                                    />
+                                    {formErrors.mqttTopicWrite && (
+                                        <div className="invalid-feedback">{formErrors.mqttTopicWrite}</div>
+                                    )}
+                                </div>
+
                             </form>
                         </div>
                         <div className="modal-footer border-0 pt-0">

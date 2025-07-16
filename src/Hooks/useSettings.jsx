@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Activity, Filter, Zap, Thermometer, Droplets } from "lucide-react"
 

@@ -61,10 +61,16 @@ const OrganizationDetail = ({ id }) => {
         status: "",
     })
 
+    // const [deviceFormData, setDeviceFormData] = useState({
+    //     deviceId: "",
+    //     organization: "",
+    // })
     const [deviceFormData, setDeviceFormData] = useState({
         deviceId: "",
-        organization: "",
+        mqttTopicRead: "",
+        mqttTopicWrite: "",
     })
+
 
     const [editOrgFormData, setEditOrgFormData] = useState({})
     const [editUserFormData, setEditUserFormData] = useState({})
@@ -117,10 +123,16 @@ const OrganizationDetail = ({ id }) => {
             console.log(response.data)
 
             setOrganization(response.data.organization)
-            setDeviceFormData((prev) => ({
+            // setDeviceFormData((prev) => ({
+            //     ...prev,
+            //     organization: response.data.organization?.organizationName || "",
+            // }))
+            setDeviceFormData(prev => ({
                 ...prev,
-                organization: response.data.organization?.organizationName || "",
+                mqttTopicRead: response.data.readingMqttTopic || "",
+                mqttTopicWrite: response.data.sendingMqttTopic || "",
             }))
+
         } catch (err) {
             console.error("Error fetching organization details:", err.response?.data || err.message)
             setError(err.response?.data?.message || "Failed to load organization details.")
@@ -266,18 +278,18 @@ const OrganizationDetail = ({ id }) => {
     // handle add user
     const handleAddUser = async () => {
         const accessToken = localStorage.getItem("access_token")
-        const userId = localStorage.getItem("User Id")
+        //const userId = localStorage.getItem("User Id")
         if (userFormData.username && userFormData.email && userFormData.userRole && organization) {
             const newUserPayload = {
                 username: userFormData.username,
                 email: userFormData.email,
                 userRole: userFormData.userRole,
-                userId,
+                objectId: id,
             };
-
+            console.log(newUserPayload);
             try {
                 const response = await axios.post(
-                    "https://api.ozopool.in/users/add/",
+                    "https://api.ozopool.in/users/add/objectId/",
                     newUserPayload,
                     {
                         headers: {
@@ -286,7 +298,7 @@ const OrganizationDetail = ({ id }) => {
                         },
                     }
                 );
-
+                console.log(response.data);
                 const addedUser = response.data;
                 setOrganization((prev) =>
                     prev
@@ -307,7 +319,7 @@ const OrganizationDetail = ({ id }) => {
                 await fetchOrganizationData();
             } catch (error) {
                 console.error("Failed to add user:", error);
-                console.error("Failed to add user:", error.response);
+                console.error("Failed to add user:", error.response.data);
             }
         }
     }
@@ -388,28 +400,64 @@ const OrganizationDetail = ({ id }) => {
     };
 
     // handle add device
-    const handleAddDevice = () => {
-        if (deviceFormData.deviceId && organization) {
-            const newDevice = {
-                id: deviceFormData.deviceId,
-                customer: deviceFormData.organization,
-                city: organization.city,
-                state: organization.city, // Assuming state is same as city for now
-                poolStatus: "Good",
-                createdOn: new Date().toISOString().split("T")[0],
-            }
+    // const handleAddDevice = () => {
+    //     if (deviceFormData.deviceId && organization) {
+    //         const newDevice = {
+    //             id: deviceFormData.deviceId,
+    //             customer: deviceFormData.organization,
+    //             city: organization.city,
+    //             state: organization.city, // Assuming state is same as city for now
+    //             poolStatus: "Good",
+    //             createdOn: new Date().toISOString().split("T")[0],
+    //         }
 
-            setOrganization((prev) =>
-                prev
-                    ? {
-                        ...prev,
-                        devices: [...prev.devices, newDevice],
-                    }
-                    : null,
+    //         setOrganization((prev) =>
+    //             prev
+    //                 ? {
+    //                     ...prev,
+    //                     devices: [...prev.devices, newDevice],
+    //                 }
+    //                 : null,
+    //         )
+
+    //         setDeviceFormData({ deviceId: "", organization: organization.organizationName })
+    //         setShowAddDeviceModal(false)
+    //     }
+    // }
+
+    const handleAddDevice = async () => {
+        const accessToken = localStorage.getItem("access_token")
+        if (!accessToken) {
+            alert("Authentication required. Please log in.")
+            localStorage.clear()
+            navigate("/")
+            return
+        }
+        const payload = {
+            deviceId: deviceFormData.deviceId,
+            mqttTopicRead: deviceFormData.mqttTopicRead,
+            mqttTopicWrite: deviceFormData.mqttTopicWrite,
+            organizationId: id,
+        }
+        try {
+            const response = await axios.post(
+                "https://api.ozopool.in/devices/add/",
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
             )
-
-            setDeviceFormData({ deviceId: "", organization: organization.organizationName })
-            setShowAddDeviceModal(false)
+            console.log("Device added:", response.data)
+            alert("Device added successfully!")
+            fetchOrganizationData()
+            resetForm()
+            handleModalClose()
+        } catch (error) {
+            console.error("Error adding device:", error.response?.data || error.message)
+            alert("Failed to add device.")
         }
     }
 
@@ -986,24 +1034,52 @@ const OrganizationDetail = ({ id }) => {
                                         className="form-control"
                                         id="deviceIdInput"
                                         value={deviceFormData.deviceId}
-                                        onChange={(e) => setDeviceFormData((prev) => ({ ...prev, deviceId: e.target.value }))}
+                                        onChange={(e) =>
+                                            setDeviceFormData((prev) => ({ ...prev, deviceId: e.target.value }))
+                                        }
                                         placeholder="Enter device ID"
                                     />
                                 </div>
+
                                 <div className="mb-3">
-                                    <label htmlFor="organizationNameInput" className="form-label">
-                                        Organization
+                                    <label htmlFor="mqttTopicReadInput" className="form-label">
+                                        MQTT Topic (Read)
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        id="organizationNameInput"
-                                        value={deviceFormData.organization}
-                                        readOnly
-                                        style={{ backgroundColor: "#f8f9fa" }}
+                                        id="mqttTopicReadInput"
+                                        value={deviceFormData.mqttTopicRead}
+                                        onChange={(e) =>
+                                            setDeviceFormData((prev) => ({
+                                                ...prev,
+                                                mqttTopicRead: e.target.value,
+                                            }))
+                                        }
+                                        placeholder="Enter read topic"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label htmlFor="mqttTopicWriteInput" className="form-label">
+                                        MQTT Topic (Write)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="mqttTopicWriteInput"
+                                        value={deviceFormData.mqttTopicWrite}
+                                        onChange={(e) =>
+                                            setDeviceFormData((prev) => ({
+                                                ...prev,
+                                                mqttTopicWrite: e.target.value,
+                                            }))
+                                        }
+                                        placeholder="Enter write topic"
                                     />
                                 </div>
                             </div>
+
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={() => setShowAddDeviceModal(false)}>
                                     Cancel
