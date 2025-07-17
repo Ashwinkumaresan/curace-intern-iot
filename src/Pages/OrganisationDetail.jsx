@@ -773,7 +773,7 @@ const OrganizationDetail = ({ id }) => {
                                                         <th>Status</th>
                                                         <th>City</th>
                                                         <th>Created On</th>
-                                                        <th></th>
+                                                        {/* <th></th> */}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -788,7 +788,7 @@ const OrganizationDetail = ({ id }) => {
                                                             </td>
                                                             <td>{org.state}</td>
                                                             <td>{org.createdOn}</td>
-                                                            <td>
+                                                            {/* <td>
                                                                 <div className="dropdown">
                                                                     <button className="btn btn-sm btn-light" data-bs-toggle="dropdown">
                                                                         <i className="bi bi-three-dots"></i>
@@ -808,7 +808,7 @@ const OrganizationDetail = ({ id }) => {
                                                                         </li>
                                                                     </ul>
                                                                 </div>
-                                                            </td>
+                                                            </td> */}
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -854,7 +854,7 @@ const OrganizationDetail = ({ id }) => {
                                                     <th>User Role</th>
                                                     <th>Status</th>
                                                     <th>Created On</th>
-                                                    <th></th>
+                                                    {/* <th></th> */}
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -869,7 +869,7 @@ const OrganizationDetail = ({ id }) => {
                                                             </span>
                                                         </td>
                                                         <td>{user.createdOn}</td>
-                                                        <td>
+                                                        {/* <td>
                                                             <div className="dropdown">
                                                                 <button className="btn btn-sm btn-light" data-bs-toggle="dropdown">
                                                                     <i className="bi bi-three-dots"></i>
@@ -889,7 +889,7 @@ const OrganizationDetail = ({ id }) => {
                                                                     </li>
                                                                 </ul>
                                                             </div>
-                                                        </td>
+                                                        </td> */}
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -924,7 +924,7 @@ const OrganizationDetail = ({ id }) => {
                                                     <th>State</th>
                                                     <th>Pool Status</th>
                                                     <th>Created On</th>
-                                                    <th></th>
+                                                    {/* <th></th> */}
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -947,7 +947,7 @@ const OrganizationDetail = ({ id }) => {
                                                             </span>
                                                         </td>
                                                         <td>{device.createdOn}</td>
-                                                        <td>
+                                                        {/* <td>
                                                             <div className="dropdown">
                                                                 <button className="btn btn-sm btn-light" data-bs-toggle="dropdown">
                                                                     <i className="bi bi-three-dots"></i>
@@ -967,7 +967,7 @@ const OrganizationDetail = ({ id }) => {
                                                                     </li>
                                                                 </ul>
                                                             </div>
-                                                        </td>
+                                                        </td> */}
                                                     </tr>
                                                 ))}
                                             </tbody>
