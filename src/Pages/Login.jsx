@@ -45,7 +45,7 @@ export default function Login() {
       localStorage.setItem("User Id", loginResponse.data.userId);
       localStorage.setItem("email", formData.email);
       localStorage.setItem("timestamp", new Date().getTime());
-      navigate("/users");
+      navigate("/device");
     } catch (error) {
       console.log("my error data", error.response.data);
       console.log("my error data error", error.response.data.error);

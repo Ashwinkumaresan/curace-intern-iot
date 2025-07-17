@@ -7,7 +7,21 @@ import "./Navbar.css";
 const MyNavbar = () => {
     const [expanded, setExpanded] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [role, setRole] = useState(true)
     const navbarRef = useRef(null);
+
+    useEffect(() => {
+        const role = localStorage.getItem("Customer Type")
+        if (role === "End Customer"){
+            setRole(false)
+            console.log("End");
+            
+        }
+        else {
+            setRole(true)
+            console.log("no");
+        }
+    },[])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -97,12 +111,17 @@ const MyNavbar = () => {
                             <Link to="/device" onClick={handleNavItemClick} className="nav-link">
                                 Device
                             </Link>
-                            <Link to="/organization" onClick={handleNavItemClick} className="nav-link">
-                                Organization
-                            </Link>
-                            <Link to="/users" onClick={handleNavItemClick} className="nav-link">
-                                Users
-                            </Link>
+                            {
+                                role &&
+                                <>
+                                    <Link to="/organization" onClick={handleNavItemClick} className="nav-link">
+                                        Organization
+                                    </Link>
+                                </>
+                            }
+                                    <Link to="/users" onClick={handleNavItemClick} className="nav-link">
+                                        Users
+                                    </Link>
                         </Nav>
 
                         <div className="d-none d-lg-block">

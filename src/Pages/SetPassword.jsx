@@ -46,7 +46,7 @@ export const SetPassword = ({ passwordId }) => {
                 );
 
                 console.log("Password updated successfully!", response.data);
-                navigate("/login");
+                navigate("/");
 
             } catch (error) {
                 if (error.response) {
