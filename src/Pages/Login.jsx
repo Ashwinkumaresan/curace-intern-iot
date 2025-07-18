@@ -47,15 +47,15 @@ export default function Login() {
       localStorage.setItem("timestamp", new Date().getTime());
       navigate("/device");
     } catch (error) {
-      console.log("my error data", error.response.data);
-      console.log("my error data error", error.response.data.error);
+      //console.log("my error data", error.response.data);
+      //console.log("my error data error", error.response.data.error);
       // if (error.response) {
-      //   console.error("Error status:", error.response.status);
-      //   console.error("Error message:", error.response.data);
+      //   //console.error("Error status:", error.response.status);
+      //   //console.error("Error message:", error.response.data);
       // } else if (error.request) {
-      //   console.error("No response received:", error.request);
+      //   //console.error("No response received:", error.request);
       // } else {
-      //   console.error("Error setting up request:", error.message);
+      //   //console.error("Error setting up request:", error.message);
       // }
     } finally {
       setIsSubmitting(false);

@@ -45,16 +45,16 @@ export const SetPassword = ({ passwordId }) => {
                     },
                 );
 
-                console.log("Password updated successfully!", response.data);
+                //console.log("Password updated successfully!", response.data);
                 navigate("/");
 
             } catch (error) {
                 if (error.response) {
-                    console.error("Server error:", error.response.data);
+                    //console.error("Server error:", error.response.data);
                 } else if (error.request) {
-                    console.error("No response received:", error.request);
+                    //console.error("No response received:", error.request);
                 } else {
-                    console.error("Request setup error:", error.message);
+                    //console.error("Request setup error:", error.message);
                 }
             } 
             // finally {

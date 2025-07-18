@@ -28,9 +28,9 @@ function App() {
       // If time difference is more than or equal to 1 hour (3600000 ms)
       if (timeDifference >= 3600000) {
         localStorage.clear();
-        console.log("LocalStorage cleared after 1 hour.");
+        //console.log("LocalStorage cleared after 1 hour.");
       } else {
-        console.log("Within 1 hour — data preserved.");
+        //console.log("Within 1 hour — data preserved.");
       }
     }
   };

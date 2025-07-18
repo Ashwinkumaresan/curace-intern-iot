@@ -99,10 +99,10 @@ const OrganizationDetail = ({ id }) => {
         setLoading(true)
         setError(null)
         const accessToken = localStorage.getItem("access_token")
-        console.log(accessToken)
+        ////console.log(accessToken)
 
         if (!accessToken) {
-            console.error("Access token not found. Please log in.")
+            ////console.error("Access token not found. Please log in.")
             alert("Authentication required. Please log in.")
             localStorage.clear()
             navigate("/")
@@ -120,7 +120,7 @@ const OrganizationDetail = ({ id }) => {
                     objectId: id,
                 },
             })
-            console.log(response.data)
+            //console.log(response.data)
 
             setOrganization(response.data.organization)
             // setDeviceFormData((prev) => ({
@@ -134,7 +134,7 @@ const OrganizationDetail = ({ id }) => {
             }))
 
         } catch (err) {
-            console.error("Error fetching organization details:", err.response?.data || err.message)
+            //console.error("Error fetching organization details:", err.response?.data || err.message)
             setError(err.response?.data?.message || "Failed to load organization details.")
             if (err.response?.status === 401) {
                 alert("Session expired. Please log in again.")
@@ -147,7 +147,7 @@ const OrganizationDetail = ({ id }) => {
     }
 
     useEffect(() => {
-        console.log("2. useEffect running. ID for condition:", id, "Condition result:", !!id)
+        //console.log("2. useEffect running. ID for condition:", id, "Condition result:", !!id)
         if (id) {
             fetchOrganizationData()
         }
@@ -167,7 +167,7 @@ const OrganizationDetail = ({ id }) => {
 
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
-            console.error("Access token not found. Please log in.");
+            //console.error("Access token not found. Please log in.");
             alert({ text: "Authentication required. Please log in.", type: "error" });
             localStorage.clear();
             navigate("/");
@@ -187,7 +187,7 @@ const OrganizationDetail = ({ id }) => {
             endpoint = "https://api.ozopool.in/organization/activate/";
             successMessage = `Organization ${organization.organizationName} activated successfully!`;
         } else {
-            console.warn("Invalid target status provided:", targetStatus);
+            //console.warn("Invalid target status provided:", targetStatus);
             alert({ text: "Invalid status selected.", type: "error" });
             setLoading(false);
             return;
@@ -207,7 +207,7 @@ const OrganizationDetail = ({ id }) => {
                 }
             );
 
-            console.log(`Organization status operation successful:`, response.data);
+            //console.log(`Organization status operation successful:`, response.data);
             alert({ text: successMessage, type: "success" });
 
             setOrganization(prev => ({
@@ -217,7 +217,7 @@ const OrganizationDetail = ({ id }) => {
 
             await fetchOrganizationData();
         } catch (error) {
-            console.error("Error updating organization status:", error.response?.data || error.message);
+            //console.error("Error updating organization status:", error.response?.data || error.message);
             const errorMessage = error.response?.data?.message || "Something went wrong during status update.";
             alert({ text: `Failed to update organization status: ${errorMessage}`, type: "error" });
 
@@ -286,7 +286,7 @@ const OrganizationDetail = ({ id }) => {
                 userRole: userFormData.userRole,
                 objectId: id,
             };
-            console.log(newUserPayload);
+            //console.log(newUserPayload);
             try {
                 const response = await axios.post(
                     "https://api.ozopool.in/users/add/objectId/",
@@ -298,7 +298,7 @@ const OrganizationDetail = ({ id }) => {
                         },
                     }
                 );
-                console.log(response.data);
+                //console.log(response.data);
                 const addedUser = response.data;
                 setOrganization((prev) =>
                     prev
@@ -318,8 +318,8 @@ const OrganizationDetail = ({ id }) => {
                 setShowAddUserModal(false);
                 await fetchOrganizationData();
             } catch (error) {
-                console.error("Failed to add user:", error);
-                console.error("Failed to add user:", error.response.data);
+                //console.error("Failed to add user:", error);
+                //console.error("Failed to add user:", error.response.data);
             }
         }
     }
@@ -353,10 +353,7 @@ const OrganizationDetail = ({ id }) => {
                     objectId: id,
                 };
 
-                console.log(
-                    "Creating new organization with payload:",
-                    newOrganizationPayload
-                );
+
 
                 const response = await axios.post(
                     "https://api.ozopool.in/organization/add/",
@@ -369,7 +366,7 @@ const OrganizationDetail = ({ id }) => {
                     }
                 );
 
-                console.log("New organization created successfully:", response.data);
+                //console.log("New organization created successfully:", response.data);
                 alert("Organization added successfully!");
 
                 // Refresh organization list after adding
@@ -391,7 +388,7 @@ const OrganizationDetail = ({ id }) => {
 
                 setShowAddOrgModal(false);
             } catch (error) {
-                console.error("Error adding organization:", error);
+                //console.error("Error adding organization:", error);
                 alert("Failed to add organization. Please try again.");
             }
         } else {
@@ -450,13 +447,13 @@ const OrganizationDetail = ({ id }) => {
                     },
                 }
             )
-            console.log("Device added:", response.data)
+            //console.log("Device added:", response.data)
             alert("Device added successfully!")
             fetchOrganizationData()
             resetForm()
             handleModalClose()
         } catch (error) {
-            console.error("Error adding device:", error.response?.data || error.message)
+            //console.error("Error adding device:", error.response?.data || error.message)
             alert("Failed to add device.")
         }
     }
@@ -622,7 +619,7 @@ const OrganizationDetail = ({ id }) => {
                                         </ul>
                                     </div>
 
-                                    <div className="dropdown">
+                                    {/* <div className="dropdown">
                                         <button className="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                             Actions
                                         </button>
@@ -634,7 +631,7 @@ const OrganizationDetail = ({ id }) => {
                                                 </button>
                                             </li>
                                         </ul>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -899,7 +896,10 @@ const OrganizationDetail = ({ id }) => {
                             </div>
 
                             {/* Devices Table */}
-                            <div className="card mb-4 shadow-sm">
+                            <div className="card mb-4 shadow-sm" style={{
+                                    height: "50vh",
+                                    overflowY: "scroll",
+                                }}>
                                 <div className="card-header d-flex justify-content-between align-items-center bg-white py-3">
                                     <div>
                                         <h5 className="card-title mb-0 fw-bold">

@@ -39,12 +39,12 @@ const Dashboard = ({ deviceId }) => {
   })
 
   const fetchDeviceDetails = async () => {
-    console.log(deviceId);
+    //console.log(deviceId);
 
     const accessToken = localStorage.getItem("access_token")
-    console.log(accessToken)
+    //console.log(accessToken)
     if (!accessToken) {
-      console.error("Access token not found. Please log in.")
+      //console.error("Access token not found. Please log in.")
       alert("Authentication required. Please log in.")
       localStorage.clear()
       navigate("/")
@@ -59,7 +59,7 @@ const Dashboard = ({ deviceId }) => {
         },
         params: { deviceId: deviceId }
       })
-      console.log(response.data)
+      //console.log(response.data)
       const combinedData = {
         user_id: response.data.user_id,
         ...response.data.data
@@ -69,7 +69,7 @@ const Dashboard = ({ deviceId }) => {
 
     } catch (err) {
       setIsConnected(false)
-      console.error("Error fetching device details:", err.response?.data || err.message)
+      //console.error("Error fetching device details:", err.response?.data || err.message)
       if (err.response?.status === 401) {
         alert("Session expired. Please log in again.")
         localStorage.clear()
@@ -83,10 +83,10 @@ const Dashboard = ({ deviceId }) => {
   }, [])
   useEffect(() => {
     if (deviceData) {
-      console.log("User ID:", deviceData.user_id)
-      console.log("PH:", deviceData.ph)
-      console.log("ORP:", deviceData.orp)
-      console.log("Ozone Level:", deviceData.ozoneLevel)
+      //console.log("User ID:", deviceData.user_id)
+      //console.log("PH:", deviceData.ph)
+      //console.log("ORP:", deviceData.orp)
+      //console.log("Ozone Level:", deviceData.ozoneLevel)
     }
   }, [deviceData])
 

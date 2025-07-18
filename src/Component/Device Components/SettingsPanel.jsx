@@ -92,7 +92,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.data);
+      //console.log(response.data.data);
 
       const data = response.data.data;
 
@@ -176,7 +176,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
       setFormData(updatedFormData);
       //fetchDeviceSettings()
     } catch (error) {
-      console.error("Error fetching device settings:", error);
+      //console.error("Error fetching device settings:", error);
     }
   };
 
@@ -220,11 +220,11 @@ const SettingsPanel = ({ onClose, deviceId }) => {
   };
 
   const handleDeviceToggle = async (key, newValue) => {
-    console.log(newValue);
+    //console.log(newValue);
 
     const apiField = apiFieldMap[key];
     if (!apiField) {
-      console.error("Unknown device key:", key);
+      //console.error("Unknown device key:", key);
       return;
     }
 
@@ -253,14 +253,14 @@ const SettingsPanel = ({ onClose, deviceId }) => {
         },
       }));
     } catch (err) {
-      console.error(`Toggle failed for ${key}:`, err.response?.data || err);
+      //console.error(`Toggle failed for ${key}:`, err.response?.data || err);
       alert("Could not update device state.");
     }
   };
 
   const saveThresholds = () => {
     alert("Thresholds saved successfully!")
-    console.log("Updated Thresholds:", thresholds)
+    //console.log("Updated Thresholds:", thresholds)
   }
 
   const saveMqttConfig = async () => {
@@ -282,7 +282,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
         }
       );
 
-      console.log("Settings updated:", response.data);
+      //console.log("Settings updated:", response.data);
       // update formData so it's in sync
       setFormData((prev) => ({
         ...prev,
@@ -291,7 +291,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
 
       alert("Settings successfully updated on the server.");
     } catch (error) {
-      console.error("Error updating settings:", error);
+      //console.error("Error updating settings:", error);
       alert("Failed to update settings.");
     }
   };
@@ -323,10 +323,10 @@ const SettingsPanel = ({ onClose, deviceId }) => {
           },
         }
       );
-      console.log("Settings updated:", response.data);
+      //console.log("Settings updated:", response.data);
       alert("Settings successfully updated on the server.");
     } catch (error) {
-      console.error("Error updating settings:", error.response.data);
+      //console.error("Error updating settings:", error.response.data);
       alert("Failed to update settings.");
     }
   };
@@ -348,13 +348,13 @@ const SettingsPanel = ({ onClose, deviceId }) => {
           },
         }
       );
-      console.log(response.data);
+      //console.log(response.data);
 
       if (response.data.checkPassword === "Success") {
         setIsAuthenticated(true);
       }
     } catch (err) {
-      console.error("Password check failed:", err.response?.data || err);
+      //console.error("Password check failed:", err.response?.data || err);
       alert("Incorrect password.");
     }
   };

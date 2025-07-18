@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import MyNavbar from "../Component/Navbar/Navbar"
 import axios from "axios"
+import PortalDropdown from "../Component/PortalDropdown"
 
 // Sample device data
 // const sampleDevices = [
@@ -463,7 +464,7 @@ export default function DeviceManagement() {
     const fetchDeviceList = async () => {
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
-            console.error("Access token not found. Redirecting to login.");
+            //console.error("Access token not found. Redirecting to login.");
             alert("Authentication required. Please log in.");
             localStorage.clear();
             navigate("/");
@@ -488,9 +489,9 @@ export default function DeviceManagement() {
             }));
 
             setDevices(mappedDevices);
-            console.log(mappedDevices);
+            //console.log(mappedDevices);
         } catch (error) {
-            console.error("Error fetching device list:", error.response?.data || error.message);
+            //console.error("Error fetching device list:", error.response?.data || error.message);
             if (error.response && error.response.status === 401) {
                 alert("Session expired or unauthorized. Please log in again.");
                 localStorage.clear();
@@ -521,7 +522,7 @@ export default function DeviceManagement() {
                 data: { deviceId: device.deviceId },
             });
 
-            console.log("Device deleted:", res.data);
+            //console.log("Device deleted:", res.data);
             fetchDeviceList()
 
             // Optional: update UI immediately
@@ -529,7 +530,7 @@ export default function DeviceManagement() {
                 prevDevices.filter((item) => item.deviceId !== device.deviceId)
             );
         } catch (error) {
-            console.error("Error deleting device:", error.response?.data || error.message);
+            //console.error("Error deleting device:", error.response?.data || error.message);
             alert("Failed to delete the device.");
         }
     };
@@ -561,7 +562,7 @@ export default function DeviceManagement() {
                 },
             });
 
-            console.log("Device added:", response.data);
+            //console.log("Device added:", response.data);
 
             // Add to local UI
             setDevices((prev) => [...prev, payload]);
@@ -571,7 +572,7 @@ export default function DeviceManagement() {
             resetForm();
             handleModalClose();
         } catch (error) {
-            console.error("Error adding device:", error.response?.data || error.message);
+            //console.error("Error adding device:", error.response?.data || error.message);
             alert("Failed to add device.");
         }
     };
@@ -609,7 +610,7 @@ export default function DeviceManagement() {
                 state: formData.state,
                 city: formData.city,
             };
-            console.log(payload);
+            //console.log(payload);
 
 
             const response = await axios.patch("https://api.ozopool.in/devices/edit/", payload, {
@@ -619,7 +620,7 @@ export default function DeviceManagement() {
                 },
             });
 
-            console.log("Device updated:", response.data);
+            //console.log("Device updated:", response.data);
 
             // Update device in UI
             setDevices((prev) =>
@@ -635,7 +636,7 @@ export default function DeviceManagement() {
             resetForm();
             handleModalClose();
         } catch (error) {
-            console.error("Error updating device:", error.response?.data || error.message);
+            //console.error("Error updating device:", error.response?.data || error.message);
             alert("Failed to update device.");
         }
     };
@@ -698,7 +699,7 @@ export default function DeviceManagement() {
                                 </div>
                             </div>
                             <div className="col-md-4 text-md-end mt-3 mt-md-0">
-                                <div className="dropdown">
+                                {/* <div className="dropdown">
                                     <button
                                         className="btn btn-outline-secondary dropdown-toggle"
                                         type="button"
@@ -728,7 +729,29 @@ export default function DeviceManagement() {
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
+                                </div> */}
+                                <PortalDropdown buttonContent="Columns">
+                                    <div>
+                                        {Object.entries(columnLabels).map(([key, label]) => (
+                                            <div key={key} className="dropdown-item-text px-3 py-1">
+                                                <div className="form-check">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        id={`column-${key}`}
+                                                        checked={visibleColumns[key]}
+                                                        onChange={() => handleColumnVisibilityChange(key)}
+                                                    />
+                                                    <label className="form-check-label" htmlFor={`column-${key}`}>
+                                                        {label}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </PortalDropdown>
+
+
                             </div>
                         </div>
                     </div>

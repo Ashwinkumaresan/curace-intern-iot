@@ -2,6 +2,7 @@ import axios from "axios"
 import { useState, useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import MyNavbar from "../Component/Navbar/Navbar"
+import PortalDropdown from "../Component/PortalDropdown"
 
 // Mock data (keeping it commented out as in your original)
 // const mockOrganizations = [...]
@@ -257,7 +258,7 @@ export default function Component() {
 
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      console.error("Access token not found. Please log in.");
+      //console.error("Access token not found. Please log in.");
       alert("Authentication required. Please log in.");
       localStorage.clear();
       navigate("/"); // Redirect to login
@@ -279,7 +280,7 @@ export default function Component() {
           city: formData.city,
           objectId: editingOrgId,
         };
-        console.log("Updating organization with payload:", updatePayload);
+        //console.log("Updating organization with payload:", updatePayload);
 
         const response = await axios.patch( // PATCH or PUT based on your backend
           `https://api.ozopool.in/organization/edit/`, // Your organization edit endpoint
@@ -292,7 +293,7 @@ export default function Component() {
           }
         );
 
-        console.log("Organization updated successfully:", response.data);
+        //console.log("Organization updated successfully:", response.data);
         alert("Organization updated successfully!");
 
         await fetchOrganization(); // Re-fetch all organizations to update the list
@@ -310,7 +311,7 @@ export default function Component() {
           city: formData.city,
           status: "Active",
         };
-        console.log("Creating new organization with payload:", newOrganizationPayload);
+        //console.log("Creating new organization with payload:", newOrganizationPayload);
 
         const response = await axios.post(
           "https://api.ozopool.in/organization/add/", // Your organization add endpoint
@@ -323,13 +324,13 @@ export default function Component() {
           }
         );
 
-        console.log("New organization created successfully:", response.data);
+        //console.log("New organization created successfully:", response.data);
         alert("Organization added successfully!");
 
         await fetchOrganization(); // Re-fetch all organizations to update the list
       }
     } catch (error) {
-      console.error("Error submitting organization data:", error.response?.data || error.message);
+      //console.error("Error submitting organization data:", error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to save organization. Please try again.";
       alert(`Error: ${errorMessage}`);
 
@@ -373,7 +374,7 @@ export default function Component() {
     // organization object should contain at least { objectId: string, status: string }
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      console.error("Access token not found. Please log in.");
+      //console.error("Access token not found. Please log in.");
       alert("Authentication required. Please log in.");
       localStorage.clear();
       navigate("/");
@@ -394,7 +395,7 @@ export default function Component() {
       successMessage = "Organization activated successfully!";
     } else {
       // Handle any other unexpected status or default to activate if unsure
-      console.warn("Unexpected organization status, defaulting to activate:", organization.status);
+      //console.warn("Unexpected organization status, defaulting to activate:", organization.status);
       endpoint = "https://api.ozopool.in/organization/activate/";
       successMessage = "Organization status updated successfully!";
     }
@@ -417,11 +418,11 @@ export default function Component() {
         }
       );
 
-      console.log(`Organization status operation successful:`, response.data);
+      //console.log(`Organization status operation successful:`, response.data);
       alert(successMessage);
       await fetchOrganization(); // Re-fetch organization data to update UI and reflect the change
     } catch (error) {
-      console.error("Error updating organization status:", error.response?.data || error.message);
+      //console.error("Error updating organization status:", error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || "Something went wrong during status update.";
       alert(`Failed to update organization status: ${errorMessage}`);
 
@@ -456,7 +457,7 @@ export default function Component() {
   const fetchOrganization = async () => {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      console.error("Access token not found. Redirecting to login.");
+      //console.error("Access token not found. Redirecting to login.");
       alert("Authentication required. Please log in.");
       localStorage.clear();
       navigate("/");
@@ -486,10 +487,10 @@ export default function Component() {
       }));
 
       setOrganizations(mappedData);
-      console.log(mappedData);
+      //console.log(mappedData);
 
     } catch (error) {
-      console.error("Error fetching data:", error.response?.data || error.message);
+      //console.error("Error fetching data:", error.response?.data || error.message);
       if (error.response && error.response.status === 401) {
         alert("Session expired or unauthorized. Please log in again.");
         localStorage.clear();
@@ -555,7 +556,7 @@ export default function Component() {
                 </div>
               </div>
               <div className="col-md-4 text-md-end mt-3 mt-md-0">
-                <div className="dropdown">
+                {/* <div className="dropdown">
                   <button
                     className="btn btn-outline-secondary dropdown-toggle"
                     type="button"
@@ -585,7 +586,26 @@ export default function Component() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </div> */}
+                <PortalDropdown buttonContent="Columns">
+                  {Object.entries(columnLabels).map(([key, label]) => (
+                    <div key={key} className="dropdown-item-text">
+                      <div className="form-check px-3 py-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`column-${key}`}
+                          checked={visibleColumns[key]}
+                          onChange={() => handleColumnVisibilityChange(key)}
+                        />
+                        <label className="form-check-label ms-2" htmlFor={`column-${key}`}>
+                          {label}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </PortalDropdown>
+
               </div>
             </div>
           </div>

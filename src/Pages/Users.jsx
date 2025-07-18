@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MyNavbar from "../Component/Navbar/Navbar";
+import PortalDropdown from "../Component/PortalDropdown";
 
 const defaultColumns = {
   username: true,
@@ -182,7 +183,7 @@ export default function Component() {
   const handleToggleUserStatus = async (user) => {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      console.error("Access token not found. Please log in.");
+      //console.error("Access token not found. Please log in.");
       alert("Authentication required. Please log in.");
       localStorage.clear();
       navigate("/");
@@ -203,7 +204,7 @@ export default function Component() {
       successMessage = "User activated successfully!";
     } else {
       // Handle any other unexpected status or default to activate if unsure
-      console.warn("Unexpected user status, defaulting to activate:", user.status);
+      //console.warn("Unexpected user status, defaulting to activate:", user.status);
       endpoint = "https://api.ozopool.in/users/activate/";
       successMessage = "User status updated successfully!";
     }
@@ -224,11 +225,11 @@ export default function Component() {
         }
       );
 
-      console.log(`User status operation successful:`, response.data);
+      //console.log(`User status operation successful:`, response.data);
       alert(successMessage);
       await fetchUserData(); // Re-fetch data to update UI and reflect the change
     } catch (error) {
-      console.error("Error updating user status:", error.response?.data || error.message);
+      //console.error("Error updating user status:", error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || "Something went wrong during status update.";
       alert(`Failed to update user status: ${errorMessage}`);
     }
@@ -247,7 +248,7 @@ export default function Component() {
   const fetchUserData = async () => {
     const accessToken = localStorage.getItem("access_token"); // Get token here
     if (!accessToken) {
-      console.error("Access token not found. Redirecting to login.");
+      //console.error("Access token not found. Redirecting to login.");
       alert("Authentication required. Please log in.");
       localStorage.clear(); // Clear any stale token
       navigate("/"); // Use navigate for redirection
@@ -270,10 +271,10 @@ export default function Component() {
         createdOn: user.createdOn,
       }));
 
-      console.log("Fetched and mapped users:", mappedUsers);
+      //console.log("Fetched and mapped users:", mappedUsers);
       setUsers(mappedUsers);
     } catch (error) {
-      console.error("Error fetching data:", error.response?.data || error.message);
+      //console.error("Error fetching data:", error.response?.data || error.message);
       if (error.response && error.response.status === 401) {
         alert("Session expired or unauthorized. Please log in again.");
         localStorage.clear();
@@ -293,7 +294,7 @@ export default function Component() {
 
     const accessToken = localStorage.getItem("access_token"); // Get token here
     if (!accessToken) {
-      console.error("Access token not found. Please log in.");
+      //console.error("Access token not found. Please log in.");
       alert("Authentication required. Please log in.");
       localStorage.clear();
       navigate("/");
@@ -311,7 +312,7 @@ export default function Component() {
           // email: formData.email, // If backend allows email changes and it's not readOnly
           // status: formData.status // Include status if you want to change it via edit modal
         };
-        console.log(updatePayload);
+        //console.log(updatePayload);
 
         const response = await axios.patch(
           "https://api.ozopool.in/users/edit/",
@@ -324,14 +325,14 @@ export default function Component() {
           }
         );
 
-        console.log("User updated successfully:", response.data);
+        //console.log("User updated successfully:", response.data);
         alert("User updated successfully!");
 
         await fetchUserData(); // Re-fetch all users
         resetForm();
         closeModal();
       } catch (error) {
-        console.error("Error updating user:", error.response?.data || error.message);
+        //console.error("Error updating user:", error.response?.data || error.message);
         const errorMessage = error.response?.data?.message || "Something went wrong during update.";
         alert(`Failed to update user: ${errorMessage}`);
       }
@@ -351,14 +352,14 @@ export default function Component() {
           },
         });
 
-        console.log("User added successfully:", response.data);
+        //console.log("User added successfully:", response.data);
         alert("User added successfully!");
 
         await fetchUserData(); // Re-fetch all users
         resetForm();
         closeModal();
       } catch (error) {
-        console.error("Error adding user:", error.response?.data || error.message);
+        //console.error("Error adding user:", error.response?.data || error.message);
         const errorMessage = error.response?.data?.message || "Something went wrong.";
         alert(`Failed to add user: ${errorMessage}`);
       }
@@ -367,16 +368,16 @@ export default function Component() {
 
   return (
     <>
-    <MyNavbar/>
+      <MyNavbar />
       <div className="container-fluid p-4" style={{
-        marginTop:"10vh"
+        marginTop: "10vh"
       }}>
         {/* Header */}
         <div
           className="d-flex justify-content-between align-items-center mb-4 position-sticky top-0"
           style={{
             backgroundColor: "white",
-            zIndex:"99"
+            zIndex: "99"
           }}
         >
           <div>
@@ -424,44 +425,34 @@ export default function Component() {
                 </div>
               </div>
               <div className="col-md-4 text-md-end mt-3 mt-md-0">
-                <div className="dropdown">
-                  <button
-                    className="btn btn-outline-secondary dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <i className="bi bi-funnel me-2 "></i>
-                    Columns
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    {Object.entries(columnLabels).map(([key, label]) => (
-                      <li key={key}>
-                        <div className="dropdown-item-text">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id={`column-${key}`}
-                              checked={visibleColumns[key]}
-                              onChange={() => handleColumnVisibilityChange(key)}
-                            />
-                            <label className="form-check-label" htmlFor={`column-${key}`}>
-                              {label}
-                            </label>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <PortalDropdown buttonContent="Columns">
+                  {Object.entries(columnLabels).map(([key, label]) => (
+                    <div key={key} className="dropdown-item-text">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`column-${key}`}
+                          checked={visibleColumns[key]}
+                          onChange={() => handleColumnVisibilityChange(key)}
+                        />
+                        <label className="form-check-label" htmlFor={`column-${key}`}>
+                          {label}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </PortalDropdown>
+
               </div>
             </div>
           </div>
         </div>
 
         {/* Tabs and Table */}
-        <div className="card">
+        <div className="card" style={{
+          zIndex: "0"
+        }}>
           <div className="card-body">
             {/* Tabs */}
             <ul className="nav nav-tabs mb-3">
