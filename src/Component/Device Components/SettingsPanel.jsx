@@ -92,7 +92,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      //console.log(response.data.data);
+      console.log(response.data.data);
 
       const data = response.data.data;
 
@@ -265,9 +265,10 @@ const SettingsPanel = ({ onClose, deviceId }) => {
 
   const saveMqttConfig = async () => {
     const token = localStorage.getItem("access_token");
+
     const payload = {
-      mqttTopicRead: mqttTopics.read,
-      mqttTopicWrite: mqttTopics.write,
+      mqttTopicRead: formData.mqttTopics.read,
+      mqttTopicWrite: formData.mqttTopics.write,
       deviceId,
     };
 
@@ -282,19 +283,12 @@ const SettingsPanel = ({ onClose, deviceId }) => {
         }
       );
 
-      //console.log("Settings updated:", response.data);
-      // update formData so it's in sync
-      setFormData((prev) => ({
-        ...prev,
-        mqttTopics: { ...mqttTopics },
-      }));
-
       alert("Settings successfully updated on the server.");
     } catch (error) {
-      //console.error("Error updating settings:", error);
       alert("Failed to update settings.");
     }
   };
+
 
   const handlePatchFormData = async () => {
     const updatedFormData = {
@@ -585,17 +579,34 @@ const SettingsPanel = ({ onClose, deviceId }) => {
                         type="text"
                         className="form-control"
                         value={formData.mqttTopics.read}
-                        onChange={(e) => setMqttTopics((prev) => ({ ...prev, read: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            mqttTopics: {
+                              ...prev.mqttTopics,
+                              read: e.target.value,
+                            },
+                          }))
+                        }
                       />
                       <p className="text-muted small mt-1">This topic receives all sensor data</p>
                     </div>
+
                     <div className="mb-4">
                       <label className="form-label">Topic for Sending Control Commands</label>
                       <input
                         type="text"
                         className="form-control"
                         value={formData.mqttTopics.write}
-                        onChange={(e) => setMqttTopics((prev) => ({ ...prev, write: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            mqttTopics: {
+                              ...prev.mqttTopics,
+                              write: e.target.value,
+                            },
+                          }))
+                        }
                       />
                       <p className="text-muted small mt-1">This topic sends control commands</p>
                     </div>
@@ -606,6 +617,7 @@ const SettingsPanel = ({ onClose, deviceId }) => {
                     </button>
                   </div>
                 )}
+
               </div>
             </div>
           </div>
